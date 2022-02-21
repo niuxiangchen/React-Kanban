@@ -13,6 +13,7 @@ export const ProjectListScreen = () => {
     personId: "",
   });
   const [list, setList] = useState([]);
+
   useEffect(() => {
     fetch(`${apiUrl}/projects?${qs.stringify(cleanObject(param))}`).then(
       async (response) => {
@@ -22,6 +23,7 @@ export const ProjectListScreen = () => {
       }
     );
   }, [param]);
+
   useMount(() => {
     fetch(`${apiUrl}/users`).then(async (response) => {
       if (response.ok) {
