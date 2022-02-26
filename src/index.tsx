@@ -4,11 +4,16 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { loadDevTools } from "jira-dev-tool";
+import { AppProviders } from "./context";
+//务必在jira-dev-tool后面引入
+import "antd/dist/antd.less";
 
 loadDevTools(() =>
   ReactDOM.render(
     <React.StrictMode>
-      <App />
+      <AppProviders>
+        <App />
+      </AppProviders>
     </React.StrictMode>,
     document.getElementById("root")
   )
