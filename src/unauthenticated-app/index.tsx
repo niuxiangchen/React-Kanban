@@ -6,20 +6,29 @@ import styled from "@emotion/styled";
 import logo from "assets/img/logo.svg";
 import left from "assets/img/left.svg";
 import right from "assets/img/right.svg";
+import { Typography } from "antd";
 
 export const UnauthenticatedApp = () => {
   const [isRegisterer, setIsRegisterer] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   return (
     <Container>
       <Header />
       <Background />
       <ShadowCard>
         <Title>{isRegisterer ? "请注册" : "请登录"}</Title>
-        {isRegisterer ? <RegisterScreen /> : <LoginScreen />}
+        {error ? (
+          <Typography.Text type={"danger"}>{error.message}</Typography.Text>
+        ) : null}
+        {isRegisterer ? (
+          <RegisterScreen onError={setError} />
+        ) : (
+          <LoginScreen onError={setError} />
+        )}
         <Divider />
-        <a type={"primary"} onClick={() => setIsRegisterer(!isRegisterer)}>
+        <Button type={"link"} onClick={() => setIsRegisterer(!isRegisterer)}>
           {isRegisterer ? "已经有账号了？直接登录" : "没有账号？注册新账号"}
-        </a>
+        </Button>
       </ShadowCard>
     </Container>
   );
