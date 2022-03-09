@@ -7,10 +7,13 @@ import logo from "assets/img/logo.svg";
 import left from "assets/img/left.svg";
 import right from "assets/img/right.svg";
 import { Typography } from "antd";
+import { useDocumentTitle } from "../utils";
 
 export const UnauthenticatedApp = () => {
   const [isRegisterer, setIsRegisterer] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+
+  useDocumentTitle("请登录注册以继续");
   return (
     <Container>
       <Header />
