@@ -4,12 +4,15 @@ import styled from "@emotion/styled";
 import { Row } from "./components/lib";
 import { ReactComponent as Softwarelogo } from "./assets/img/software-logo.svg";
 import { Button, Dropdown, Menu } from "antd";
+import { Route, Routes } from "react-router";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ProjectScreen } from "./screens/project";
 
 export const AuthenticatedApp = () => {
-  const { logout, user } = useAuth();
   const value: any = undefined;
-  return (
-    <Container>
+  const PageHeader = () => {
+    const { logout, user } = useAuth();
+    return (
       <Header between={true}>
         <HeaderLeft gap={true}>
           <Softwarelogo width={"18rem"} color={"rgb(38,132,255)"} />
@@ -34,8 +37,22 @@ export const AuthenticatedApp = () => {
           </Dropdown>
         </HeaderRight>
       </Header>
+    );
+  };
+
+  return (
+    <Container>
+      <PageHeader />
       <Main>
-        <ProjectListScreen />
+        <Router>
+          <Routes>
+            <Route path={"/projects"} element={<ProjectListScreen />} />
+            <Route
+              path={"/projects/:projectId/*"}
+              element={<ProjectScreen />}
+            />
+          </Routes>
+        </Router>
       </Main>
     </Container>
   );
