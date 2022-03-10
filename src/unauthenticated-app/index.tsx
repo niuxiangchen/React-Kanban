@@ -8,7 +8,7 @@ import left from "assets/img/left.svg";
 import right from "assets/img/right.svg";
 import { Typography } from "antd";
 import { useDocumentTitle } from "../utils";
-
+//未登录时的页面
 export const UnauthenticatedApp = () => {
   const [isRegisterer, setIsRegisterer] = useState(false);
   const [error, setError] = useState<Error | null>(null);

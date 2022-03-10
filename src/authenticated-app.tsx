@@ -8,7 +8,7 @@ import { Route, Routes, Navigate } from "react-router";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ProjectScreen } from "./screens/project";
 import { resetRoute } from "./utils";
-
+//登录后的用户界面
 export const AuthenticatedApp = () => {
   const value: any = undefined;
   const PageHeader = () => {
