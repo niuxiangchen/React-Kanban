@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMountedRef } from "./index";
 
 interface State<D> {
   error: Error | null;
@@ -21,13 +22,16 @@ export const useAsync = <D>(
   initialConfig?: typeof defaultConfig
 ) => {
   const config = { ...defaultConfig, initialConfig };
+
   const [state, setState] = useState<State<D>>({
     ...defaultInitialState,
     ...initialState,
   });
 
+  const mountedRef = useMountedRef();
   //useState直接传入函数的含义是：惰性初始化，所以要用useState保存函数，不能直接传入函数
-  const [retry, serRetry] = useState(() => () => {});
+  //页面加载时函数就已经了执行一次 此时retry被初始化为：空函数 ()=>{}
+  const [retry, setRetry] = useState(() => () => {});
 
   //成功时的回调
   const setData = (data: D) => {
@@ -44,6 +48,7 @@ export const useAsync = <D>(
   };
 
   //run用来触发异步请求
+  //页面加载时会执行一次run
   const run = (
     promise: Promise<D>,
     runConfig?: { retry: () => Promise<D> }
@@ -51,15 +56,20 @@ export const useAsync = <D>(
     if (!promise || !promise.then) {
       throw new Error("请传入Promise类型数据");
     }
-    serRetry(() => () => {
+
+    //每次调用时把函数保存下来 而不是执行函数体内部的代码
+    setRetry(() => () => {
       if (runConfig?.retry) {
         run(runConfig?.retry(), runConfig);
       }
     });
+
     setState({ ...state, stat: "loading" });
+
     return promise
       .then((data) => {
-        setData(data);
+        //组件已经被挂载
+        if (mountedRef.current) setData(data);
         return data;
       })
       .catch((error) => {

@@ -21,6 +21,7 @@ interface ListProps extends TableProps<Project> {
 
 export const List = ({ users, ...props }: ListProps) => {
   const { mutate } = useEditProject();
+  //更新列表并调用传过来的retry函数
   const pinProject = (id: number, pin: boolean) =>
     mutate({ id, pin }).then(props.refresh);
   return (
@@ -30,6 +31,7 @@ export const List = ({ users, ...props }: ListProps) => {
       columns={[
         {
           title: <Pin checked={true} disabled={true} />,
+          //  参数分别为当前行的值，当前行数据，行索引
           render(value, project) {
             return (
               <Pin
