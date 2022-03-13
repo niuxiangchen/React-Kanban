@@ -1,6 +1,6 @@
 import { useAsync } from "./use-async";
 import { Project } from "../screens/project-list/list";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { cleanObject } from "./index";
 import { useHttp } from "./http";
 
@@ -10,8 +10,10 @@ export const useProjects = (param?: Partial<Project>) => {
   const { run, ...result } = useAsync<Project[]>();
 
   //请求函数 返回值为请求获得的Promise对象
-  const fetchProjects = () =>
-    client("projects", { data: cleanObject(param || {}) });
+  const fetchProjects = useCallback(
+    () => client("projects", { data: cleanObject(param || {}) }),
+    [client, param]
+  );
 
   // useEffect每次渲染时都会执行 包括第一次
   useEffect(() => {
@@ -22,7 +24,7 @@ export const useProjects = (param?: Partial<Project>) => {
     run(fetchProjects(), {
       retry: fetchProjects,
     });
-  }, [param]);
+  }, [param, run, fetchProjects]);
   return result;
 };
 

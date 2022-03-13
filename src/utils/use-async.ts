@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useMountedRef } from "./index";
 
 interface State<D> {
@@ -34,51 +34,52 @@ export const useAsync = <D>(
   const [retry, setRetry] = useState(() => () => {});
 
   //成功时的回调
-  const setData = (data: D) => {
+  const setData = useCallback((data: D) => {
     setState({
       data,
       stat: "success",
       error: null,
     });
-  };
+  }, []);
 
   //失败时的回调
-  const setError = (error: Error) => {
+  const setError = useCallback((error: Error) => {
     setState({ error: error, stat: "error", data: null });
-  };
+  }, []);
 
   //run用来触发异步请求
   //页面加载时会执行一次run
-  const run = (
-    promise: Promise<D>,
-    runConfig?: { retry: () => Promise<D> }
-  ) => {
-    if (!promise || !promise.then) {
-      throw new Error("请传入Promise类型数据");
-    }
-
-    //每次调用时把函数保存下来 而不是执行函数体内部的代码
-    setRetry(() => () => {
-      if (runConfig?.retry) {
-        run(runConfig?.retry(), runConfig);
+  const run = useCallback(
+    (promise: Promise<D>, runConfig?: { retry: () => Promise<D> }) => {
+      if (!promise || !promise.then) {
+        throw new Error("请传入Promise类型数据");
       }
-    });
 
-    setState({ ...state, stat: "loading" });
-
-    return promise
-      .then((data) => {
-        //组件已经被挂载
-        if (mountedRef.current) setData(data);
-        return data;
-      })
-      .catch((error) => {
-        // catch会消化异常,如果不主动抛出,外面是接收不到异常的
-        setError(error);
-        if (config.throwOnError) return Promise.reject(error);
-        return error;
+      //每次调用时把函数保存下来 而不是执行函数体内部的代码
+      setRetry(() => () => {
+        if (runConfig?.retry) {
+          run(runConfig?.retry(), runConfig);
+        }
       });
-  };
+
+      //prevState此时此刻的state
+      setState((prevState) => ({ ...prevState, stat: "loading" }));
+
+      return promise
+        .then((data) => {
+          //组件已经被挂载
+          if (mountedRef.current) setData(data);
+          return data;
+        })
+        .catch((error) => {
+          // catch会消化异常,如果不主动抛出,外面是接收不到异常的
+          setError(error);
+          if (config.throwOnError) return Promise.reject(error);
+          return error;
+        });
+    },
+    [config.throwOnError, mountedRef, setData, setError]
+  );
 
   return {
     isIdle: state.stat === "idle",
