@@ -4,11 +4,10 @@ import styled from "@emotion/styled";
 import { ButtonNoPadding, Row } from "./components/lib";
 import { ReactComponent as Softwarelogo } from "./assets/img/software-logo.svg";
 import { Button, Dropdown, Menu } from "antd";
-import { Route, Routes, Navigate } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ProjectScreen } from "./screens/project";
 import { resetRoute } from "./utils";
-import { useState } from "react";
 import { ProjectModal } from "./screens/project-list/project-modal";
 import { ProjectPopover } from "./components/project-popover";
 //登录后的用户界面
@@ -26,6 +25,7 @@ export const AuthenticatedApp = () => {
         <HeaderRight>
           <User />
         </HeaderRight>
+        <ProjectModal />
       </Header>
     );
   };
