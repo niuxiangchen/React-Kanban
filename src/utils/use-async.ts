@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useReducer, useState } from "react";
 import { useMountedRef } from "./index";
 
 interface State<D> {
@@ -17,35 +17,53 @@ export const defaultConfig = {
   throwOnError: false,
 };
 
+const useSafeDispatch = <T>(dispatch: (...args: T[]) => void) => {
+  const mountedRef = useMountedRef();
+
+  return useCallback(
+    (...args: T[]) => (mountedRef.current ? dispatch(...args) : void 0),
+    [dispatch, mountedRef]
+  );
+};
+
 export const useAsync = <D>(
   initialState?: State<D>,
   initialConfig?: typeof defaultConfig
 ) => {
   const config = { ...defaultConfig, initialConfig };
 
-  const [state, setState] = useState<State<D>>({
-    ...defaultInitialState,
-    ...initialState,
-  });
+  const [state, dispatch] = useReducer(
+    (state: State<D>, action: Partial<State<D>>) => ({
+      ...state,
+      ...action,
+    }),
+    { ...defaultInitialState, ...initialState }
+  );
 
-  const mountedRef = useMountedRef();
+  const safeDispatch = useSafeDispatch(dispatch);
   //useState直接传入函数的含义是：惰性初始化，所以要用useState保存函数，不能直接传入函数
   //页面加载时函数就已经了执行一次 此时retry被初始化为：空函数 ()=>{}
   const [retry, setRetry] = useState(() => () => {});
 
   //成功时的回调
-  const setData = useCallback((data: D) => {
-    setState({
-      data,
-      stat: "success",
-      error: null,
-    });
-  }, []);
+  const setData = useCallback(
+    (data: D) => {
+      safeDispatch({
+        data,
+        stat: "success",
+        error: null,
+      });
+    },
+    [safeDispatch]
+  );
 
   //失败时的回调
-  const setError = useCallback((error: Error) => {
-    setState({ error: error, stat: "error", data: null });
-  }, []);
+  const setError = useCallback(
+    (error: Error) => {
+      safeDispatch({ error: error, stat: "error", data: null });
+    },
+    [safeDispatch]
+  );
 
   //run用来触发异步请求
   //页面加载时会执行一次run
@@ -63,12 +81,12 @@ export const useAsync = <D>(
       });
 
       //prevState此时此刻的state
-      setState((prevState) => ({ ...prevState, stat: "loading" }));
+      safeDispatch({ stat: "loading" });
 
       return promise
         .then((data) => {
           //组件已经被挂载
-          if (mountedRef.current) setData(data);
+          setData(data);
           return data;
         })
         .catch((error) => {
@@ -78,7 +96,7 @@ export const useAsync = <D>(
           return error;
         });
     },
-    [config.throwOnError, mountedRef, setData, setError]
+    [config.throwOnError, setData, setError, safeDispatch]
   );
 
   return {
