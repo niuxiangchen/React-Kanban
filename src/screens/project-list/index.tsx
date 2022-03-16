@@ -14,9 +14,7 @@ import { useUsers } from "../../utils/user";
 import { useUrlQueryParam } from "../../utils/url";
 import { useProjectsSearchParams } from "./util";
 
-export const ProjectListScreen = (props: {
-  setProjectModalOpen: (isOpen: boolean) => void;
-}) => {
+export const ProjectListScreen = (props: { projectButton: JSX.Element }) => {
   useDocumentTitle("项目列表", false);
 
   //每当搜索栏里的数据改变，就会去调用useProjects里的useEffect进而调用run
@@ -35,9 +33,7 @@ export const ProjectListScreen = (props: {
     <Container>
       <Row justify="space-between">
         <h1>项目列表</h1>
-        <Button onClick={() => props.setProjectModalOpen(true)}>
-          创建项目
-        </Button>
+        {props.projectButton}
       </Row>
       {/*搜索框数据改变会调用setParam改变param的值触发重新渲染  */}
       <SearchPanel param={param} setParam={setParam} users={users || []} />
@@ -49,7 +45,7 @@ export const ProjectListScreen = (props: {
         loading={isLoading}
         dataSource={list || []}
         users={users || []}
-        setProjectModalOpen={props.setProjectModalOpen}
+        projectButton={props.projectButton}
       />
     </Container>
   );
