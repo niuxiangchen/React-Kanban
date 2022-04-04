@@ -6,8 +6,8 @@ import styled from "@emotion/styled";
 import logo from "assets/img/logo.svg";
 import left from "assets/img/left.svg";
 import right from "assets/img/right.svg";
-import { Typography } from "antd";
 import { useDocumentTitle } from "../utils";
+import { ErrorBox } from "../components/lib";
 //未登录时的页面
 export const UnauthenticatedApp = () => {
   const [isRegisterer, setIsRegisterer] = useState(false);
@@ -28,9 +28,8 @@ export const UnauthenticatedApp = () => {
       </Button>
       <ShadowCard>
         <Title>{isRegisterer ? "请注册" : "请登录"}</Title>
-        {error ? (
-          <Typography.Text type={"danger"}>{error.message}</Typography.Text>
-        ) : null}
+
+        <ErrorBox error={error} />
         {isRegisterer ? (
           <RegisterScreen onError={setError} />
         ) : (

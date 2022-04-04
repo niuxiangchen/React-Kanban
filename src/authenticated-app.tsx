@@ -4,59 +4,47 @@ import styled from "@emotion/styled";
 import { ButtonNoPadding, Row } from "./components/lib";
 import { ReactComponent as Softwarelogo } from "./assets/img/software-logo.svg";
 import { Button, Dropdown, Menu } from "antd";
-import { Route, Routes, Navigate } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ProjectScreen } from "./screens/project";
 import { resetRoute } from "./utils";
-import { useState } from "react";
 import { ProjectModal } from "./screens/project-list/project-modal";
 import { ProjectPopover } from "./components/project-popover";
 //登录后的用户界面
 export const AuthenticatedApp = () => {
-  const [projectModalOpen, setProjectModalOpen] = useState(false);
-  const PageHeader = (props: {
-    setProjectModalOpen: (isOpen: boolean) => void;
-  }) => {
+  const PageHeader = () => {
     return (
       <Header between={true}>
         <HeaderLeft gap={true}>
           <ButtonNoPadding type={"link"} onClick={resetRoute}>
             <Softwarelogo width={"18rem"} color={"rgb(38,132,255)"} />
           </ButtonNoPadding>
-          <ProjectPopover setProjectModalOpen={setProjectModalOpen} />
-          <h2>用户</h2>
+          <ProjectPopover />
+          <span>用户</span>
         </HeaderLeft>
         <HeaderRight>
           <User />
         </HeaderRight>
-        <ProjectModal
-          projectModalOpen={projectModalOpen}
-          onClose={() => setProjectModalOpen(false)}
-        />
+        <ProjectModal />
       </Header>
     );
   };
 
   return (
     <Container>
-      <PageHeader setProjectModalOpen={setProjectModalOpen} />
-      <Main>
-        <Router>
+      <Router>
+        <PageHeader />
+        <Main>
           <Routes>
-            <Route
-              path={"/projects"}
-              element={
-                <ProjectListScreen setProjectModalOpen={setProjectModalOpen} />
-              }
-            />
+            <Route path={"/projects"} element={<ProjectListScreen />} />
             <Route
               path={"/projects/:projectId/*"}
               element={<ProjectScreen />}
             />
             <Route path="*" element={<Navigate to={"/projects"} />} />
           </Routes>
-        </Router>
-      </Main>
+        </Main>
+      </Router>
     </Container>
   );
 };
