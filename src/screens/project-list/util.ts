@@ -1,11 +1,11 @@
 import { useUrlQueryParam } from "../../utils/url";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useProject } from "../../utils/project";
 
 //项目列表搜索的参数
 export const useProjectsSearchParams = () => {
-  const [keys] = useState<("name" | "personId")[]>(["name", "personId"]);
-  const [param, setParam] = useUrlQueryParam(keys);
+  // const [keys] = useState<("name" | "personId")[]>(["name", "personId"]);
+  const [param, setParam] = useUrlQueryParam(["name", "personId"]);
   return [
     useMemo(
       () => ({
@@ -16,6 +16,11 @@ export const useProjectsSearchParams = () => {
     ),
     setParam,
   ] as const;
+};
+
+export const useProjectQueryKey = () => {
+  const [params] = useProjectsSearchParams();
+  return ["projects", params];
 };
 
 export const useProjectModal = () => {
