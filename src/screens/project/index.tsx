@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { Route, Routes, Navigate } from "react-router";
-import { KanbanScreen } from "../Kanban";
+import { Navigate, Route, Routes } from "react-router";
+import { KanbanScreen } from "../kanban";
 import { EpicScreen } from "../epic";
 
 export const ProjectScreen = () => {
@@ -15,7 +15,12 @@ export const ProjectScreen = () => {
         {/*若上面两个匹配不到则跳转到看板*/}
         <Route
           path="*"
-          element={<Navigate to={window.location.pathname + "/kanban"} />}
+          element={
+            <Navigate
+              to={window.location.pathname + "/kanban"}
+              replace={true}
+            />
+          }
         />
       </Routes>
     </div>

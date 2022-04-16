@@ -24,3 +24,8 @@
 - 非状态 非基本类型不可以放到依赖里
 - 如果我们定义的非基本类型想要做依赖，我们就要用useCallback,useMemo限制住，不让他在每次页面渲染的时候都会重新创建
 - const和let实际是有变量提升的，只不过他的提升不像var一样直接把变量初始化为undefined，而是把变量放在暂时性死区里
+- 跨组件状态管理总结
+- 小场面 -> 状态提升/组合组件
+- 缓存状态 -> react-query/swr
+- 客户端状态 -> url/redux/context
+- React-query
