@@ -11,6 +11,8 @@ import { Task } from "../../types/task";
 import { Mark } from "../../components/mark";
 import { useDeleteKanban } from "../../utils/kanban";
 import { Row } from "../../components/lib";
+import React from "react";
+import { Drag, Drop, DropChild } from "../../components/drag-and-drop";
 
 const TaskTypeIcon = ({ id }: { id: number }) => {
   const { data: taskTypes } = useTaskTypes();
@@ -19,7 +21,7 @@ const TaskTypeIcon = ({ id }: { id: number }) => {
     return null;
   }
   // return <Text alt={"图标"} src={name === "task" ? taskIcon : bugIcon}
-  return <span>{name === "task" ? "😅" : "😂"}</span>;
+  return <span>{name === "task" ? "❌" : "✅"}</span>;
 };
 
 const TaskCard = ({ task }: { task: Task }) => {
@@ -40,28 +42,47 @@ const TaskCard = ({ task }: { task: Task }) => {
   );
 };
 
-export const KanbanColumn = ({ kanban }: { kanban: Kanban }) => {
+export const KanbanColumn = React.forwardRef<
+  HTMLDivElement,
+  { kanban: Kanban }
+>(({ kanban, ...props }, ref) => {
   const { data: allTasks } = useTasks(useTasksSearchParams());
   const tasks = allTasks?.filter((task) => task.kanbanId === kanban.id);
   return (
-    <Container>
+    <Container {...props} ref={ref}>
       <Row between={true}>
         <h3>{kanban.name}</h3>
-        <More kanban={kanban} />
+        <More kanban={kanban} key={kanban.id} />
       </Row>
       <TasksContainer>
-        {tasks?.map((task) => (
-          <TaskCard task={task} />
-        ))}
+        <Drop
+          type={"ROW"}
+          direction={"vertical"}
+          droppableId={String(kanban.id)}
+        >
+          <DropChild style={{ minHeight: "1rem" }}>
+            {tasks?.map((task, taskIndex) => (
+              <Drag
+                key={task.id}
+                index={taskIndex}
+                draggableId={"task" + task.id}
+              >
+                <div>
+                  <TaskCard key={task.id} task={task} />
+                </div>
+              </Drag>
+            ))}
+          </DropChild>
+        </Drop>
         <CreateTask kanbanId={kanban.id} />
       </TasksContainer>
     </Container>
   );
-};
+});
 
 const More = ({ kanban }: { kanban: Kanban }) => {
   const { mutateAsync } = useDeleteKanban(useKanbanQueryKey());
-  const startEdit = () => {
+  const startDelete = () => {
     Modal.confirm({
       okText: "确定",
       cancelText: "取消",
@@ -74,7 +95,7 @@ const More = ({ kanban }: { kanban: Kanban }) => {
   const overlay = (
     <Menu>
       <Menu.Item>
-        <Button type={"link"} onClick={startEdit}>
+        <Button type={"link"} onClick={startDelete}>
           删除
         </Button>
       </Menu.Item>
