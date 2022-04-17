@@ -29,3 +29,4 @@
 - 缓存状态 -> react-query/swr
 - 客户端状态 -> url/redux/context
 - React-query
+- forceRender={true}不管这个组件的visible是true还是false都渲染一下
