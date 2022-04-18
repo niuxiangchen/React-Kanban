@@ -1,4 +1,6 @@
 React Hooks + TypeScript实现的简易版Jira
+
+
 项目运行截图
 
 ![image](https://github.com/niuxiangchen/React-hooks-jira/blob/master/screenshots/%E7%99%BB%E9%99%86%E9%A1%B5%E9%9D%A2.jpg)
