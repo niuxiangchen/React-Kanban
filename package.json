@@ -55,7 +55,9 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/react-hooks": "^8.0.0",
     "@types/react-beautiful-dnd": "^13.1.2",
-    "@welldone-software/why-did-you-render": "^6.2.3"
+    "@welldone-software/why-did-you-render": "^6.2.3",
+    "msw": "^0.39.2"
   }
 }

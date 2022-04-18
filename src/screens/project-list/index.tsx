@@ -1,39 +1,52 @@
-import { SearchPanel } from "./search-panel";
-import { List } from "./list";
-import { useDebounce, useDocumentTitle } from "../../utils";
-import styled from "@emotion/styled";
-import { Button, Row } from "antd";
-import { useProjects } from "../../utils/project";
-import { useUsers } from "../../utils/user";
-import { useProjectModal, useProjectsSearchParams } from "./util";
-import { ErrorBox } from "../../components/lib";
+import React from "react";
+import { SearchPanel } from "screens/project-list/search-panel";
+import { List } from "screens/project-list/list";
+import { useDebounce, useDocumentTitle } from "utils";
+import { useProjects } from "utils/project";
+import { useUsers } from "utils/user";
+import {
+  useProjectModal,
+  useProjectsSearchParams,
+} from "screens/project-list/util";
+import {
+  ButtonNoPadding,
+  ErrorBox,
+  Row,
+  ScreenContainer,
+} from "components/lib";
+import { Profiler } from "components/profiler";
 
-export const ProjectListScreen = (props: {}) => {
+// 状态提升可以让组件共享状态，但是容易造成 prop drilling
+
+// 基本类型，可以放到依赖里；组件状态，可以放到依赖里；非组件状态的对象，绝不可以放到依赖里
+// https://codesandbox.io/s/keen-wave-tlz9s?file=/src/App.js
+
+// 使用 JS 的同学，大部分的错误都是在 runtime(运行时) 的时候发现的
+// 我们希望，在静态代码中，就能找到其中的一些错误 -> 强类型
+export const ProjectListScreen = () => {
   useDocumentTitle("项目列表", false);
 
-  //每当搜索栏里的数据改变，就会去调用useProjects里的useEffect进而调用run
-  const [param, setParam] = useProjectsSearchParams();
   const { open } = useProjectModal();
-  const { isLoading, error, data: list } = useProjects(useDebounce(param, 200));
 
+  const [param, setParam] = useProjectsSearchParams();
+  const { isLoading, error, data: list } = useProjects(useDebounce(param, 200));
   const { data: users } = useUsers();
 
   return (
-    <Container>
-      <Row justify="space-between">
-        <h1>项目列表</h1>
-        <Button onClick={open}>创建项目</Button>
-      </Row>
-      {/*搜索框数据改变会调用setParam改变param的值触发重新渲染  */}
-      <SearchPanel param={param} setParam={setParam} users={users || []} />
-      <ErrorBox error={error} />
-      <List loading={isLoading} dataSource={list || []} users={users || []} />
-    </Container>
+    <Profiler id={"项目列表"}>
+      <ScreenContainer>
+        <Row marginBottom={2} between={true}>
+          <h1>项目列表</h1>
+          <ButtonNoPadding onClick={open} type={"link"}>
+            创建项目
+          </ButtonNoPadding>
+        </Row>
+        <SearchPanel users={users || []} param={param} setParam={setParam} />
+        <ErrorBox error={error} />
+        <List loading={isLoading} users={users || []} dataSource={list || []} />
+      </ScreenContainer>
+    </Profiler>
   );
 };
 
-ProjectListScreen.whyDidYouRender = true;
-
-const Container = styled.div`
-  padding: 3.2rem;
-`;
+ProjectListScreen.whyDidYouRender = false;

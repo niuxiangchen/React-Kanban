@@ -13,24 +13,6 @@ import { ProjectPopover } from "./components/project-popover";
 import { UserPopover } from "components/user-popover";
 //登录后的用户界面
 export const AuthenticatedApp = () => {
-  const PageHeader = () => {
-    return (
-      <Header between={true}>
-        <HeaderLeft gap={true}>
-          <ButtonNoPadding type={"link"} onClick={resetRoute}>
-            <Softwarelogo width={"18rem"} color={"rgb(38,132,255)"} />
-          </ButtonNoPadding>
-          <ProjectPopover />
-          <UserPopover />s{" "}
-        </HeaderLeft>
-        <HeaderRight>
-          <User />
-        </HeaderRight>
-        <ProjectModal />
-      </Header>
-    );
-  };
-
   return (
     <Container>
       <Router>
@@ -47,6 +29,24 @@ export const AuthenticatedApp = () => {
         </Main>
       </Router>
     </Container>
+  );
+};
+
+const PageHeader = () => {
+  return (
+    <Header between={true}>
+      <HeaderLeft gap={true}>
+        <ButtonNoPadding type={"link"} onClick={resetRoute}>
+          <Softwarelogo width={"18rem"} color={"rgb(38,132,255)"} />
+        </ButtonNoPadding>
+        <ProjectPopover />
+        <UserPopover />
+      </HeaderLeft>
+      <HeaderRight>
+        <User />
+      </HeaderRight>
+      <ProjectModal />
+    </Header>
   );
 };
 
@@ -71,25 +71,22 @@ const User = () => {
     </Dropdown>
   );
 };
-
+// temporal dead zone(暂时性死区)
 const Container = styled.div`
   display: grid;
   grid-template-rows: 6rem 1fr;
   height: 100vh;
 `;
 
+// grid-area 用来给grid子元素起名字
 const Header = styled(Row)`
-  justify-content: space-between;
   padding: 3.2rem;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
+  z-index: 1;
 `;
-
 const HeaderLeft = styled(Row)``;
-
 const HeaderRight = styled.div``;
-
 const Main = styled.main`
-  /* height: calc(100vh - 6rem); */
   display: flex;
   overflow: hidden;
 `;
